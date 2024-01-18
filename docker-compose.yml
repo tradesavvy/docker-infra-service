@@ -12,8 +12,7 @@ services:
         - '5672:5672'
         # HTTP management UI
         - '15672:15672'
-    networks:
-        - laabhum-net
+    network_mode: host
     volumes:
       - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq/
