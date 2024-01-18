@@ -29,7 +29,7 @@ services:
 
 networks:
   laabhum-net:
-    driver: bridge
+    driver: host
 volumes:
   # mongodb_container_data:
   redis_data:
