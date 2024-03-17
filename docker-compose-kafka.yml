@@ -7,6 +7,8 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181"
+    networks:
+      - laabhum-net
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -21,6 +23,8 @@ services:
       - "29092:29092"
       - "9092:9092"
       - "9101:9101"
+    networks:
+      - laabhum-net
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -41,6 +45,8 @@ services:
       - broker
     ports:
       - "8081:8081"
+    networks:
+      - laabhum-net      
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
@@ -55,6 +61,8 @@ services:
       - schema-registry
     ports:
       - "8083:8083"
+    networks:
+      - laabhum-net      
     environment:
       CONNECT_BOOTSTRAP_SERVERS: 'broker:29092'
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
@@ -81,6 +89,8 @@ services:
       - connect
     ports:
       - "8088:8088"
+    networks:
+      - laabhum-net
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_BOOTSTRAP_SERVERS: "broker:29092"
@@ -103,27 +113,6 @@ services:
     entrypoint: /bin/sh
     tty: true
 
-  ksql-datagen:
-    image: confluentinc/ksqldb-examples:7.5.0
-    hostname: ksql-datagen
-    container_name: ksql-datagen
-    depends_on:
-      - ksqldb-server
-      - broker
-      - schema-registry
-      - connect
-    command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b broker:29092 1 40 && \
-                       echo Waiting for Confluent Schema Registry to be ready... && \
-                       cub sr-ready schema-registry 8081 40 && \
-                       echo Waiting a few seconds for topic creation to finish... && \
-                       sleep 11 && \
-                       tail -f /dev/null'"
-    environment:
-      KSQL_CONFIG_DIR: "/etc/ksql"
-      STREAMS_BOOTSTRAP_SERVERS: broker:29092
-      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
-      STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
   rest-proxy:
     image: confluentinc/cp-kafka-rest:7.5.0
@@ -132,6 +121,8 @@ services:
       - schema-registry
     ports:
       - 8082:8082
+    networks:
+      - laabhum-net
     hostname: rest-proxy
     container_name: rest-proxy
     environment:
@@ -139,3 +130,7 @@ services:
       KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+
+networks:
+laabhum-net:
+  driver: bridge
