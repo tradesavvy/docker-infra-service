@@ -7,8 +7,6 @@ services:
     ports:
       - '5672:5672'
       - '15672:15672'
-    networks:
-      - laabhum-net
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/
       - rabbitmq_log:/var/log/rabbitmq/
@@ -21,11 +19,6 @@ services:
       - '6379:6379'
     volumes:
       - redis_data:/bitnami/redis/data
-    networks:
-      - laabhum-net
-networks:
-  laabhum-net:
-    driver: overlay
 
 volumes:
   rabbitmq_data:
