@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
@@ -10,8 +12,11 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/
       - rabbitmq_log:/var/log/rabbitmq/
+    networks:
+      - tmp_default
+
   redis:
-    image: docker.io/bitnami/redis:latest
+    image: bitnami/redis:latest
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
@@ -19,6 +24,8 @@ services:
       - '6379:6379'
     volumes:
       - redis_data:/bitnami/redis/data
+    networks:
+      - tmp_default
 
 volumes:
   rabbitmq_data:
@@ -27,3 +34,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
+
+networks:
+  tmp_default:
+    external: true
